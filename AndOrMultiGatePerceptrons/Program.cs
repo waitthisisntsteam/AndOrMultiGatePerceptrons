@@ -15,6 +15,9 @@
             {
                 currentError = orGate.TrainORGate(input, desiredOutputs, currentError);
                 Console.WriteLine(currentError);
+
+                var d = orGate.Compute(input);
+                ;
             }
         }
     }
