@@ -55,28 +55,30 @@ namespace AndOrMultiGatePerceptrons
             double[] outputs = Compute(inputs);
 
             double errorSum = 0;
-            for (int i = 0; i < outputs.Length; i++) errorSum += Math.Abs(ErrorFunc(outputs[i], desiredOutputs[i]));
+            for (int i = 0; i < outputs.Length; i++)
+            {
+                errorSum += Math.Pow(ErrorFunc(outputs[i], desiredOutputs[i]), 2);
+            }
             return errorSum / outputs.Length;
         }
 
         public double TrainORGate(double[][] inputs, double[] desiredOutputs, double currentError)
         {   
             Random rand = new Random();
-            int chosenIndex = rand.Next(0, Weights.Length);
+            int chosenIndex = rand.Next(0, Weights.Length + 1);
             int valAlteration = rand.Next(0, 2) == 1 ? -1 : 1;
-            int chosenMutation = rand.Next(0, 2);
-            double originalWeight = Weights[chosenIndex];
+            double originalWeight = chosenIndex < Weights.Length ? Weights[chosenIndex] : 0;
             double originalBias = Bias;
 
-            if (chosenMutation == 1) Weights[chosenIndex] += MutationAmount * valAlteration;
+            if (chosenIndex < Weights.Length) Weights[chosenIndex] += MutationAmount * valAlteration;
             else Bias += MutationAmount * valAlteration;
 
             double error = GetError(inputs, desiredOutputs);
 
-            if (error < currentError) 
-                return error;
-            Weights[chosenIndex] = originalWeight;
-            Bias = originalBias;
+            if (error < currentError) return error;
+            if (chosenIndex < Weights.Length) Weights[chosenIndex] = originalWeight;
+            else Bias = originalBias;
+
             return currentError;
         }
     }
