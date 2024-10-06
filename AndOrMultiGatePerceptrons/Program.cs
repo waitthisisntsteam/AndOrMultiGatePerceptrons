@@ -16,7 +16,7 @@
                 currentError = gate.TrainORGate(input, desiredOutputs, currentError);
                 Console.WriteLine(currentError);
 
-                var d = gate.Compute(input);
+                var d = gate.UserCompute(input);
                 ;
             }
         }

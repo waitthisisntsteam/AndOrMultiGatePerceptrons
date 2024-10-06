@@ -36,7 +36,20 @@ namespace AndOrMultiGatePerceptrons
             Bias = Random(random, min, max);
         }
 
-        public double[] Compute(double[][] inputs)
+        public double[] UserCompute(double[][] inputs)
+        {
+            double[] outputs = Compute(inputs);
+
+            for (int i = 0; i < outputs.Length; i++)
+            {
+                if (outputs[i] < 0.5) outputs[i] = 0;
+                else outputs[i] = 1;
+            }
+
+            return outputs;
+        }
+
+        private double[] Compute(double[][] inputs)
         {
             double[] output = new double[inputs.Length];
             for (int i = 0; i < inputs.Length; i++) output[i] = Compute(inputs[i]);
