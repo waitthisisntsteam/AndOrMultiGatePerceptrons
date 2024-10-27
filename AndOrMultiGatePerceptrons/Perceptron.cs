@@ -11,22 +11,28 @@ namespace AndOrMultiGatePerceptrons
         double[] Weights;
         double Bias;
         double MutationAmount;
-        Func<double, double, double> ErrorFunc;
 
-        public Perceptron(double[] weights, double bias, double mutationAmount, Func<double, double, double> errorFunc)
+        ActivationFunction ActivationFunction;
+        ErrorFunction ErrorFunction;
+
+        public Perceptron(double[] weights, double bias, double mutationAmount, ErrorFunction errorFunction, ActivationFunction activationFunction)
         {
             Weights = weights;
             Bias = bias;
             MutationAmount = mutationAmount;
-            ErrorFunc = errorFunc;
+
+            ActivationFunction = activationFunction;
+            ErrorFunction = errorFunction;
         }
-        public Perceptron(int inputAmount, double mutationAmount, Func<double, double, double> errorFunc)
+        public Perceptron(int inputAmount, double mutationAmount, ErrorFunction errorFunction, ActivationFunction activationFunction)
         {
             Weights = new double[inputAmount];
             Bias = 0;
 
             MutationAmount = mutationAmount;
-            ErrorFunc = errorFunc;
+
+            ActivationFunction = activationFunction;
+            ErrorFunction = errorFunction;
         }
 
         private double Random(Random random, double min, double max) => (random.NextDouble() * (max - min)) + min;
@@ -36,7 +42,7 @@ namespace AndOrMultiGatePerceptrons
             Bias = Random(random, min, max);
         }
 
-        public double[] UserCompute(double[][] inputs)
+        public double[] UserComputeWithFiltering(double[][] inputs)
         {
             double[] outputs = Compute(inputs);
 
@@ -45,6 +51,15 @@ namespace AndOrMultiGatePerceptrons
                 if (outputs[i] < 0.5) outputs[i] = 0;
                 else outputs[i] = 1;
             }
+
+            return outputs;
+        }
+
+        public double[] UserComputeWithActivation(double[][] inputs)
+        {
+            double[] outputs = Compute(inputs);
+
+            for (int i = 0; i < outputs.Length; i++) outputs[i] = ActivationFunction.FunctionFunc(outputs[i]);
 
             return outputs;
         }
@@ -68,10 +83,7 @@ namespace AndOrMultiGatePerceptrons
             double[] outputs = Compute(inputs);
 
             double errorSum = 0;
-            for (int i = 0; i < outputs.Length; i++)
-            {
-                errorSum += Math.Pow(ErrorFunc(outputs[i], desiredOutputs[i]), 2);
-            }
+            for (int i = 0; i < outputs.Length; i++) errorSum += Math.Pow(ErrorFunction.FunctionFunc(outputs[i], desiredOutputs[i]), 2);
             return errorSum / outputs.Length;
         }
 
